@@ -2,6 +2,11 @@
 // to solve Sudoku problem
 // Tomado de https://www.geeksforgeeks.org/sudoku-backtracking-7/
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <unistd.h>
+#include <math.h>
 
 // UNASSIGNED is used for empty
 // cells in sudoku grid
@@ -10,11 +15,6 @@
 // N is used for the size of
 // Sudoku grid. The size will be NxN
 #define N 9
-
-// This function finds an entry
-// in grid that is still unassigned
-bool FindUnassignedLocation(int grid[N][N],
-							int& row, int& col);
 
 // Checks whether it will be legal
 // to assign num to the given row, col
@@ -30,11 +30,6 @@ across rows, columns, and boxes) */
 bool SolveSudoku(int grid[N][N])
 {
 	int row, col;
-
-	// Check If there is no unassigned
-	// location, we are done
-	if (!FindUnassignedLocation(grid, row, col))
-		return true; // success!
 
 	//Cconsider digits 1 to 9
 	for (int num = 1; num <= 9; num++)
@@ -57,23 +52,6 @@ bool SolveSudoku(int grid[N][N])
 	}
 
 	// This triggers backtracking
-	return false;
-}
-
-/* Searches the grid to find an entry
-that is still unassigned. If
-found, the reference parameters row,
-col will be set the location
-that is unassigned, and true is
-returned. If no unassigned entries
-remain, false is returned. */
-bool FindUnassignedLocation(
-	int grid[N][N], int& row, int& col)
-{
-	for (row = 0; row < N; row++)
-		for (col = 0; col < N; col++)
-			if (grid[row][col] == UNASSIGNED)
-				return true;
 	return false;
 }
 
@@ -139,33 +117,42 @@ bool isSafe(
 		&& grid[row][col] == UNASSIGNED;
 }
 
-/* A utility function to print grid */
-void printGrid(int grid[N][N])
-{
-	for (int row = 0; row < N; row++) {
-		for (int col = 0; col < N; col++)
-			printf("%2d", grid[row][col]);
-		printf("\n");
-	}
-}
 
 /* Driver Program to test above functions */
 int main()
 {
-	// 0 means unassigned cells
-	int grid[N][N] = { { 3, 0, 6, 5, 0, 8, 4, 0, 0 },
-					{ 5, 2, 0, 0, 0, 0, 0, 0, 0 },
-					{ 0, 8, 7, 0, 0, 0, 0, 3, 1 },
-					{ 0, 0, 3, 0, 1, 0, 0, 8, 0 },
-					{ 9, 0, 0, 8, 6, 3, 0, 0, 5 },
-					{ 0, 5, 0, 0, 9, 0, 6, 0, 0 },
-					{ 1, 3, 0, 0, 0, 0, 2, 5, 0 },
-					{ 0, 0, 0, 0, 0, 0, 0, 7, 4 },
-					{ 0, 0, 5, 2, 0, 6, 3, 0, 0 } };
+	int grid[N][N];
+	char ch [100];
+	char filename [20];
+	// rowN
+	FILE *ptr;
+
+	scanf("%s", filename);
+
+	if ((ptr = fopen(filename, "r")) == NULL) {
+		printf("error reading file");
+	}
+
+	fgets(ch, 100, ptr);
+
+	int length = strlen(ch);
+	int index = 0;
+
+	for (int j = 0; j < 9; j++) {
+		for (int i = index; i < index + 9; i++) {
+			grid[j][i] = ch[i] - '0';
+		}
+		index = index + 9;
+	}
+	// si se meten bien a la matriz
+
+
 	if (SolveSudoku(grid) == true)
-		printGrid(grid);
+		printf("Success");
 	else
 		printf("No solution exists");
+	// saber porque sale que no tiene solucion :(
+	fclose(ptr);
 
 	return 0;
 }
